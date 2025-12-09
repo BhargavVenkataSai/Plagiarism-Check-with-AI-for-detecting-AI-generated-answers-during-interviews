@@ -246,98 +246,128 @@ export default function App() {
   }
 
   return (
-    <div style={{ padding: 24, fontFamily: 'system-ui' }}>
-      <h2>Real-Time AI-Generated Answer Detection (POC)</h2>
+    <div style={{
+      padding: 32,
+      fontFamily: 'Inter, system-ui, sans-serif',
+      background: 'linear-gradient(135deg, #f8fafc 0%, #e3e8ee 100%)',
+      minHeight: '100vh',
+      color: '#222'
+    }}>
+      <header style={{ display: 'flex', alignItems: 'center', marginBottom: 32 }}>
+        <img src="https://img.icons8.com/fluency/48/ai.png" alt="AI" style={{ marginRight: 16 }} />
+        <h1 style={{ fontWeight: 700, fontSize: 32, margin: 0 }}>Real-Time AI-Generated Answer Detection</h1>
+      </header>
 
-      {/* Mode toggle */}
-      <div style={{ marginBottom: 12 }}>
-        <label style={{ marginRight: 16 }}>
-          <input
-            type="radio"
-            checked={useWhisper}
-            onChange={() => setUseWhisper(true)}
-          /> Whisper STT (better accuracy)
-        </label>
-        <label>
-          <input
-            type="radio"
-            checked={!useWhisper}
-            onChange={() => setUseWhisper(false)}
-          /> Web Speech API (real-time, Chrome only)
-        </label>
-      </div>
-
-      {/* Recording controls */}
-      <div style={{ marginBottom: 12 }}>
-        {useWhisper ? (
-          <>
-            <button onClick={startWhisper} disabled={whisperRecording || whisperProcessing} style={{ marginRight: 8 }}>
-              {whisperRecording ? '🔴 Recording...' : 'Start Recording (Whisper)'}
-            </button>
-            <button onClick={stopWhisper} disabled={!whisperRecording}>
-              Stop & Transcribe
-            </button>
-            {whisperProcessing && <span style={{ marginLeft: 8, color: '#666' }}>Processing...</span>}
-          </>
-        ) : (
-          <>
-            <button onClick={start} disabled={recording} style={{ marginRight: 8 }}>Start Recording</button>
-            <button onClick={stop} disabled={!recording}>Stop Recording</button>
-          </>
-        )}
-      </div>
-
-      <div style={{ marginBottom: 12 }}>
-        <h4>Or type/paste text to analyze:</h4>
-        <textarea
-          value={manualText}
-          onChange={e => setManualText(e.target.value)}
-          placeholder="Type or paste answer text here..."
-          rows={3}
-          style={{ width: '100%', maxWidth: 600, padding: 8 }}
-        />
-        <br />
-        <button onClick={detectManual} disabled={manualLoading || !manualText.trim()} style={{ marginTop: 4 }}>
-          {manualLoading ? 'Analyzing...' : 'Analyze Text'}
-        </button>
-      </div>
-
-      <div>
-        <h3>Live Transcript</h3>
-        <pre style={{ border: '1px solid #ccc', padding: 12, minHeight: 120, whiteSpace: 'pre-wrap' }}>
-          {interim ? `[interim] ${interim}\n` : ''}{transcript}
-        </pre>
-      </div>
-
-      <div>
-        <h3>Scores</h3>
-        {latest && (
-          <div style={{ marginBottom: 8 }}>
-            <strong>Latest Detection:</strong>
-            <Badge score={latest.score} />
-            <span style={{ marginLeft: 8 }}>
-              {latest.flag ? 'AI-like detected' : 'Human-like'} — {latest.explanation}
-            </span>
-          </div>
-        )}
-        {list.map((item, idx) => (
-          <div key={idx} style={{ display: 'flex', alignItems: 'center', marginBottom: 6 }}>
-            <div style={{ flex: 1 }}>{item.text}</div>
-            <Badge score={item.score} />
-          </div>
-        ))}
-      </div>
-
-      <div>
-        <h3>Score History</h3>
-        <LineChart data={list} />
-      </div>
-
-      {errorMsg && (
-        <div style={{ marginTop: 12, color: 'crimson' }}>
-          {errorMsg}
+      <section style={{
+        background: '#fff',
+        borderRadius: 16,
+        boxShadow: '0 2px 12px rgba(0,0,0,0.07)',
+        padding: 24,
+        maxWidth: 700,
+        margin: '0 auto 32px auto'
+      }}>
+        {/* Mode toggle */}
+        <div style={{ marginBottom: 18, display: 'flex', gap: 24 }}>
+          <label style={{ fontWeight: 500 }}>
+            <input
+              type="radio"
+              checked={useWhisper}
+              onChange={() => setUseWhisper(true)}
+              style={{ marginRight: 8 }}
+            /> Whisper STT <span style={{ color: '#1976d2', fontWeight: 400 }}>(best accuracy)</span>
+          </label>
+          <label style={{ fontWeight: 500 }}>
+            <input
+              type="radio"
+              checked={!useWhisper}
+              onChange={() => setUseWhisper(false)}
+              style={{ marginRight: 8 }}
+            /> Web Speech API <span style={{ color: '#888', fontWeight: 400 }}>(real-time, Chrome only)</span>
+          </label>
         </div>
-      )}
+
+        {/* Recording controls */}
+        <div style={{ marginBottom: 18, display: 'flex', gap: 16 }}>
+          {useWhisper ? (
+            <>
+              <button onClick={startWhisper} disabled={whisperRecording || whisperProcessing} style={{
+                background: '#1976d2', color: '#fff', border: 'none', borderRadius: 8, padding: '10px 18px', fontWeight: 600, fontSize: 16, cursor: 'pointer', boxShadow: '0 1px 4px rgba(0,0,0,0.08)', marginRight: 8
+              }}>
+                {whisperRecording ? '🔴 Recording...' : '🎤 Start Recording (Whisper)'}
+              </button>
+              <button onClick={stopWhisper} disabled={!whisperRecording} style={{
+                background: '#fff', color: '#1976d2', border: '1px solid #1976d2', borderRadius: 8, padding: '10px 18px', fontWeight: 600, fontSize: 16, cursor: 'pointer', boxShadow: '0 1px 4px rgba(0,0,0,0.08)'
+              }}>
+                ⏹️ Stop & Transcribe
+              </button>
+              {whisperProcessing && <span style={{ marginLeft: 8, color: '#666' }}>Processing...</span>}
+            </>
+          ) : (
+            <>
+              <button onClick={start} disabled={recording} style={{
+                background: '#1976d2', color: '#fff', border: 'none', borderRadius: 8, padding: '10px 18px', fontWeight: 600, fontSize: 16, cursor: 'pointer', boxShadow: '0 1px 4px rgba(0,0,0,0.08)', marginRight: 8
+              }}>🎤 Start Recording</button>
+              <button onClick={stop} disabled={!recording} style={{
+                background: '#fff', color: '#1976d2', border: '1px solid #1976d2', borderRadius: 8, padding: '10px 18px', fontWeight: 600, fontSize: 16, cursor: 'pointer', boxShadow: '0 1px 4px rgba(0,0,0,0.08)'
+              }}>⏹️ Stop Recording</button>
+            </>
+          )}
+        </div>
+
+        <div style={{ marginBottom: 18 }}>
+          <h3 style={{ fontWeight: 600, marginBottom: 8 }}>Or type/paste text to analyze:</h3>
+          <textarea
+            value={manualText}
+            onChange={e => setManualText(e.target.value)}
+            placeholder="Type or paste answer text here..."
+            rows={3}
+            style={{ width: '100%', maxWidth: 600, padding: 12, borderRadius: 8, border: '1px solid #e3e8ee', fontSize: 16, marginBottom: 8 }}
+          />
+          <br />
+          <button onClick={detectManual} disabled={manualLoading || !manualText.trim()} style={{
+            background: '#43b581', color: '#fff', border: 'none', borderRadius: 8, padding: '10px 18px', fontWeight: 600, fontSize: 16, cursor: manualLoading ? 'wait' : 'pointer', boxShadow: '0 1px 4px rgba(0,0,0,0.08)', marginTop: 4
+          }}>
+            {manualLoading ? 'Analyzing...' : 'Analyze Text'}
+          </button>
+        </div>
+
+        <div style={{ marginBottom: 18 }}>
+          <h3 style={{ fontWeight: 600 }}>Live Transcript</h3>
+          <pre style={{ border: '1px solid #e3e8ee', borderRadius: 8, padding: 16, minHeight: 120, whiteSpace: 'pre-wrap', background: '#f8fafc', fontSize: 15 }}>
+            {interim ? `[interim] ${interim}\n` : ''}{transcript}
+          </pre>
+        </div>
+
+        <div style={{ marginBottom: 18 }}>
+          <h3 style={{ fontWeight: 600 }}>Scores</h3>
+          {latest && (
+            <div style={{ marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <strong>Latest Detection:</strong>
+              <Badge score={latest.score} />
+              <span style={{ marginLeft: 8 }}>
+                {latest.flag ? 'AI-like detected' : 'Human-like'} — {latest.explanation}
+              </span>
+            </div>
+          )}
+          {list.map((item, idx) => (
+            <div key={idx} style={{ display: 'flex', alignItems: 'center', marginBottom: 6, gap: 12 }}>
+              <div style={{ flex: 1 }}>{item.text}</div>
+              <Badge score={item.score} />
+            </div>
+          ))}
+        </div>
+
+        <div style={{ marginBottom: 18 }}>
+          <h3 style={{ fontWeight: 600 }}>Score History</h3>
+          <LineChart data={list} />
+        </div>
+
+        {errorMsg && (
+          <div style={{ marginTop: 12, color: 'crimson', fontWeight: 500 }}>
+            {errorMsg}
+          </div>
+        )}
+      </section>
     </div>
   )
 }
